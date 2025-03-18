@@ -48,32 +48,59 @@ def download_from_grdrive_or_mega(
     return download_path
 
 
+# def download_and_prepare_data():
+#     download_path = pth("../assets/").resolve()
+#     if not download_path.is_dir():
+#         download_path.mkdir(parents=True, exist_ok=True)
+
+#     print("Preparing text dataset...")
+#     _, texts_iter = get_text_dataset()
+
+#     fonts_path = download_from_grdrive_or_mega(
+#         download_path / "fonts",
+#         "1-K8EE0QsXfxaAV-5uOE6lhTLGicRZbW2",
+#         "itg2TKoJ#UCOEQqX7pPwAf9pguWVUuksX7orWtzK5n4SdI6CQqGc"
+#     )
+
+#     hdris_path = download_from_grdrive_or_mega(
+#         download_path / "hdris",
+#         "1BNCTqw5fenCK-D48-a7VQ234Aq3k45hu",
+#         "D5YWQKgR#fFRHe-HpbCc7-yAm3h5zxbR905o1hkrxKJDvQOsGOKk"
+#     )
+
+#     materials_path = download_from_grdrive_or_mega(
+#         download_path / "materials",
+#         "1-5dz5DMce-braCrhVIsqB58PvcyB6qyy",
+#         "W0hGyCzB#-Gldvyt6uGt9D6iT8kDL-T4CKGNwIKD0Yc4jR2MAgxo"
+#     )
+
+#     fonts_iter = get_fonts(fonts_path)
+#     hdris_iter = get_hdris(hdris_path)
+#     materials_iter = get_materials(materials_path)
+
+#     return texts_iter, fonts_iter, hdris_iter, materials_iter
+
 def download_and_prepare_data():
-    download_path = pth("../assets/").resolve()
+    # 资源存放目录
+    download_path = pth("assets/").resolve()
+    
     if not download_path.is_dir():
-        download_path.mkdir(parents=True, exist_ok=True)
+        raise FileNotFoundError(f"资源目录 {download_path} 不存在，请确保已手动下载并解压资源。")
 
     print("Preparing text dataset...")
     _, texts_iter = get_text_dataset()
 
-    fonts_path = download_from_grdrive_or_mega(
-        download_path / "fonts",
-        "1-K8EE0QsXfxaAV-5uOE6lhTLGicRZbW2",
-        "itg2TKoJ#UCOEQqX7pPwAf9pguWVUuksX7orWtzK5n4SdI6CQqGc"
-    )
+    # 直接使用手动下载的本地资源路径
+    fonts_path = download_path / "fonts"
+    hdris_path = download_path / "hdris"
+    materials_path = download_path / "materials"
 
-    hdris_path = download_from_grdrive_or_mega(
-        download_path / "hdris",
-        "1BNCTqw5fenCK-D48-a7VQ234Aq3k45hu",
-        "D5YWQKgR#fFRHe-HpbCc7-yAm3h5zxbR905o1hkrxKJDvQOsGOKk"
-    )
+    # 确保资源目录存在
+    for path, name in [(fonts_path, "字体"), (hdris_path, "HDRI"), (materials_path, "材质")]:
+        if not path.is_dir():
+            raise FileNotFoundError(f"错误：{name} 资源目录 {path} 不存在，请检查路径是否正确。")
 
-    materials_path = download_from_grdrive_or_mega(
-        download_path / "materials",
-        "1-5dz5DMce-braCrhVIsqB58PvcyB6qyy",
-        "W0hGyCzB#-Gldvyt6uGt9D6iT8kDL-T4CKGNwIKD0Yc4jR2MAgxo"
-    )
-
+    # 加载资源
     fonts_iter = get_fonts(fonts_path)
     hdris_iter = get_hdris(hdris_path)
     materials_iter = get_materials(materials_path)
@@ -112,6 +139,7 @@ def main(
     Returns:
         None
     """
+    print("begin load blender..")
 
     device = device.upper()
 
@@ -135,6 +163,8 @@ def main(
         raise ValueError(f"Output directory {output_dir} is not empty")
 
     resolution = resolution_x, resolution_y
+
+    print("begin download_and_prepare_data..")
 
     texts, fonts, hdris, materials = download_and_prepare_data()
 

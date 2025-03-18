@@ -24,7 +24,7 @@ def run_blender_command(
     out = subprocess.run(
         [
             str(blender_binary_path),
-            pth("./Blender_3D_document_rendering_pipeline/blender/scene.blend").resolve(),
+            pth("./src/Blender_3D_document_rendering_pipeline/blender/scene.blend").resolve(),
             "--background",
             "--factory-startup",
             "--threads",
@@ -33,7 +33,7 @@ def run_blender_command(
             "CYCLES",
             "--enable-autoexec",
             "--python",
-            pth("./Blender_3D_document_rendering_pipeline/src/main.py").resolve(),
+            pth("./src/Blender_3D_document_rendering_pipeline/src/main.py").resolve(),
             "--",
             "--cycles-device",
             device,

@@ -205,7 +205,7 @@ def generate_sample(
         return
 
     sample_id = f"sample_{index:08d}"
-
+    # img:array image_dir:PosixPath sample_id:str compression_level:int
     image_path = save_images(img, image_dir, sample_id, compression_level)
 
     config_path = config_dir / f"{sample_id}.json"
@@ -336,5 +336,6 @@ def generate_samples(
 
     # remove failed samples
     generated_samples = [k for k in generated_samples if k]
+    print(f"2d samples:{generated_samples}")
 
     return generated_samples

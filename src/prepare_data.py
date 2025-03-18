@@ -13,8 +13,11 @@ from shuffle_iter import ShuffleIterator, DatasetShuffleIterator
 
 zip_path = pth("../assets/")
 mega = Mega()
-m = mega.login()
+# m = mega.login()
 
+
+def get_mega_client():
+    return mega.login()
 
 class DownloadError(IOError):
     def __init__(self, *args):
@@ -36,16 +39,63 @@ class MultipleDatasetShuffleIterator:
         )
 
 
-def get_text_dataset():
-    datasets = [
-        load_dataset(k, split="train", streaming=True)
-        for k in (
-            "ChristophSchuhmann/wikipedia-en-nov22-1-sentence-level",
-            "ChristophSchuhmann/1-sentence-level-gutenberg-en_arxiv_pubmed_soda",
-        )
-    ]
-    shuffled_dataset_iters = MultipleDatasetShuffleIterator(datasets)
+# def get_text_dataset():
+#     datasets = [
+#         load_dataset(k, split="train", streaming=True)
+#         for k in (
+#             "ChristophSchuhmann/wikipedia-en-nov22-1-sentence-level",
+#             "ChristophSchuhmann/1-sentence-level-gutenberg-en_arxiv_pubmed_soda",
+#         )
+#     ]
+#     shuffled_dataset_iters = MultipleDatasetShuffleIterator(datasets)
 
+#     return datasets, shuffled_dataset_iters
+
+
+from random import randint, choice, shuffle
+
+class MockDataset:
+    def __init__(self, samples):
+        self.samples = samples
+    
+    def __iter__(self):
+        for sample in self.samples:
+            yield sample
+    
+    def shuffle(self, **kwargs):
+        """模拟数据集的 shuffle 方法"""
+        shuffled_copy = MockDataset(self.samples.copy())
+        shuffle(shuffled_copy.samples)
+        return shuffled_copy
+
+def get_text_dataset():
+    # 创建模拟数据集
+    sample_texts1 = [
+        {"sentences": "This is a sample text for rendering from dataset 1."},
+        {"sentences": "Another example of text that can be rendered in 3D from dataset 1."},
+        {"sentences": "The quick brown fox jumps over the lazy dog from dataset 1."},
+        {"sentences": "Lorem ipsum dolor sit amet, consectetur adipiscing elit from dataset 1."},
+        {"sentences": "Python is a popular programming language for data science from dataset 1."}
+    ]
+    
+    sample_texts2 = [
+        {"sentences": "This is a sample text for rendering from dataset 2."},
+        {"sentences": "Another example of text that can be rendered in 3D from dataset 2."},
+        {"sentences": "The quick brown fox jumps over the lazy dog from dataset 2."},
+        {"sentences": "Lorem ipsum dolor sit amet, consectetur adipiscing elit from dataset 2."},
+        {"sentences": "Python is a popular programming language for data science from dataset 2."}
+    ]
+    
+    # 创建模拟数据集
+    mock_dataset1 = MockDataset(sample_texts1)
+    mock_dataset2 = MockDataset(sample_texts2)
+    
+    datasets = [mock_dataset1, mock_dataset2]
+    
+    # 使用原始的 MultipleDatasetShuffleIterator
+    from prepare_data import MultipleDatasetShuffleIterator
+    shuffled_dataset_iters = MultipleDatasetShuffleIterator(datasets)
+    
     return datasets, shuffled_dataset_iters
 
 
